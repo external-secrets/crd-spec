@@ -174,6 +174,19 @@ spec:
         version: provider-key-version
         property: provider-key-property
 
+        # (optional) provider-specific instructions on how to fetch the secret
+        azurekv:
+          # fetch tags and use ref.property to extract a certain tag
+          # tags are included in a GetSecret() respose
+          # see https://github.com/Azure/azure-sdk-for-go/blob/v51.1.0/services/keyvault/v7.0/keyvault/models.go#L2865
+          fetchTags: true
+        awssm:
+          # causes a DescribeSecret() request to fetch the assigned tags
+          # https://docs.aws.amazon.com/sdk-for-go/api/service/secretsmanager/#DescribeSecretOutput
+          fetchTags: true
+          # If the backend secret shall be treated as binary data represented by a base64-encoded string
+          binary: true
+
   # Used to fetch all properties from the Provider key
   # If multiple dataFrom are specified, secrets are merged in the specified order
   dataFrom:
