@@ -273,8 +273,8 @@ spec:
             name: azurekv-sp-secret
             key: client-secret
 
-      # The URL to that KeyVault instance, as found in the Azure Portal
-      vaultURL: https://my-vault09.vault.azure.net/
+      # The URI to that KeyVault instance, as found in the Azure Portal & the az CLI output
+      vaultUri: https://my-vault09.vault.azure.net/
 
 status:
   # Standard condition schema
