@@ -256,15 +256,15 @@ spec:
       # AWS Region to be used for the provider
       region: eu-central-1
 
-# AzureKV configures this store to sync secrets using Azure Key-Vault provider
+    # AzureKV configures this store to sync secrets using Azure Key-Vault provider
     azurekv:
-      # Auth defines the information necessary to authenticate against Azure by
-      # getting the Service-Princpal's clientID and clientSecret from an already created Kubernetes Secret
+      # Auth defines the information necessary to authenticate against Azure
       auth:
         # The Azure Tenant to send requests to.
         tenantId: 4be10619-c5d4-4032-bd6a-a697cb365a4a
 
-        secretRef:
+        # The Service-Princpal's clientID and clientSecret from an already created Kubernetes Secret
+        servicePrincipalSecretRef:
           clientId:
             name: azurekv-sp-secret
             key: client-id
