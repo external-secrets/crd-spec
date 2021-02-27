@@ -28,6 +28,7 @@ status: draft
   - [Proposal](#proposal)
     - [API](#api)
     - [External Secret](#external-secret)
+      - [ExternalSecret - Azure Objects](#externalsecret---azure-objects)
       - [Behavior](#behavior)
     - [Secret Store](#secret-store)
   - [Workflow in a ESO instance](#workflow-in-a-eso-instance)
@@ -211,6 +212,101 @@ status:
 
 ```
 
+#### ExternalSecret - Azure Objects
+
+The 5 semantics below (3 for indovidual secrets, 2 for KeyVault) refect the
+[Azure API](https://pkg.go.dev/github.com/Azure/azure-sdk-for-go/services/keyvault/v7.0/keyvault) capability:
+
+```yaml
+  data:
+    # The name of the managed Kubernetes Secret
+    - secretKey: a-simple-secret
+      # The reference to the Azure Secret value
+      remoteRef:
+        # The Azure Secret object name
+        key: a-simple-secret-azure-name
+
+    # The name of the managed Kubernetes Secret
+    - secretKey: a-versioned-secret
+      # The reference to the Azure Secret value
+      remoteRef:
+        # The Azure Secret object name
+        key: a-versioned-secret-azure-name
+        # The Secret version (optional: default is latest)
+        version: a-versioned-secret-azure-version
+
+    # The name of the managed Kubernetes Secret
+    - secretKey: a-secret-tag
+      # The reference to the Azure Secret tag
+      remoteRef:
+        # The Azure Secret object name
+        key: a-tagged-secret-azure-name
+        # The (optional) tag name to fetch the value from as secret value
+        property: a-tagged-secret-tag-name
+
+    # A managed Kubernetes TLS-typed Secret from a TLS CERT-bundle in Azure (proposal 1, with new field "type")
+    - secretKey: tls.key
+      # The reference to the certificate bundle in Azure Secret
+      remoteRef:
+        # The Azure Secret object name
+        key: a-tls-secret-azure-name
+        # How much of the CERT bundle we want to get: one of "key" | "cert" | "bundle" (default)
+        type: key
+    - secretKey: tls.cert
+      # The reference to the certificate bundle in Azure Secret
+      remoteRef:
+        # The Azure Secret object name
+        key: a-tls-secret-azure-name
+        # How much of the CERT bundle we want to get: one of "key" | "cert" | "bundle" (default)
+        type: cert
+
+    # A managed Kubernetes TLS-typed Secret from a TLS CERT-bundle in Azure (proposal 2, with "/qualifier")
+    - secretKey: tls.key
+      # The reference to the certificate bundle in Azure Secret
+      remoteRef:
+        # The Azure Secret object name
+        key: a-tls-secret-azure-name/tls.key
+    - secretKey: tls.cert
+      # The reference to the certificate bundle in Azure Secret
+      remoteRef:
+        # The Azure Secret object name
+        key: a-tls-secret-azure-name/tls.cert
+
+dataFrom:
+    # Fetch every Azure secrets from the current Azure KeyVault
+    # Insert one Kubernetes secret...
+    - remoteRef:
+        # ...with each Azure secret name being a Kubernetes secret property
+        # ... and the value for each property being the secret value.
+        key: "*"
+
+    # Fetch every Azure secrets from the current Azure KeyVault
+    # Insert one Kubernetes secret...
+    - remoteRef:
+        # ...with each Azure secret name being a Kubernetes secret property
+        key: "*"
+        # ... and the value for each property value being the secret tag's value.
+        property: "a-tag"
+
+    # Fetch every tags of a given Azure secret from the current Azure KeyVault
+    # Insert one Kubernetes secret...
+    - remoteRef:
+        # ...with each Azure secret tag being a Kubernetes secret property
+        key: "a-secret-azure-name"
+        # ... and the value for each property being the secret tag's value.
+        property: "*"
+
+    # Auto-discovery: A managed Kubernetes TLS-typed Secret from a TLS CERT-bundle in Azure, in a single API call
+    # Add both "tls.key" and "tls.cert" properties in the generated Secret
+    - remoteRef:
+        key: a-tls-secret-azure-name
+
+    # Auto-discovery: A managed Kubernetes Opaque Secret from a standard Secret in Azure, in a single API call
+    # Add "an-std-secret-azure-name" as property in the generated Secret
+    - remoteRef:
+        key: an-std-secret-azure-name
+```
+
 #### Behavior
 
 The ExternalSecret control loop **ensures** that the target resource exists and stays up to date with the upstream provider. Because most upstream APIs are limited in throughput the control loop must implement some sort of jitter and retry/backoff mechanic.
@@ -263,7 +359,7 @@ spec:
         # The Azure Tenant to send requests to.
         tenantId: 4be10619-c5d4-4032-bd6a-a697cb365a4a
 
-        # The Service-Princpal's clientID and clientSecret from an already created Kubernetes Secret
+        # The Service-Princpal's clientId and clientSecret
         servicePrincipalSecretRef:
           clientId:
             name: azurekv-sp-secret
