@@ -250,15 +250,15 @@ The 5 semantics below (3 for indovidual secrets, 2 for KeyVault) refect the
       remoteRef:
         # The Azure Secret object name
         key: a-tls-secret-azure-name
-        # How much of the CERT bundle we want to get: one of "key" | "cert" | "bundle" (default)
-        type: key
+        # How much of the secret bundle we want to get: one of "tls.key" | "tls.cert" | "none" (default, keep everything)
+        extract: tls.key
     - secretKey: tls.cert
       # The reference to the certificate bundle in Azure Secret
       remoteRef:
         # The Azure Secret object name
         key: a-tls-secret-azure-name
-        # How much of the CERT bundle we want to get: one of "key" | "cert" | "bundle" (default)
-        type: cert
+        # How much of the secret bundle we want to get: one of "tls.key" | "tls.cert" | "none" (default, keep everything)
+        extract: tls.cert
 
     # A managed Kubernetes TLS-typed Secret from a TLS CERT-bundle in Azure (proposal 2, with "/qualifier")
     - secretKey: tls.key
