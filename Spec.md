@@ -272,7 +272,7 @@ The 5 semantics below (3 for indovidual secrets, 2 for KeyVault) refect the
         # The Azure Secret object name
         key: a-tls-secret-azure-name/tls.cert
 
-dataFrom:
+  dataFrom:
     # Fetch every Azure secrets from the current Azure KeyVault
     # Insert one Kubernetes secret...
     - remoteRef:
