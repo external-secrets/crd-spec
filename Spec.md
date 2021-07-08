@@ -184,6 +184,13 @@ spec:
         version: provider-key-version
         property: provider-key-property
 
+        # Policy for fetching tags/labels from provider secrets, possible options are Fetch, None. Defaults to None
+        metadataPolicy: Fetch
+
+        # Strategy for decoding provider secrets, options are Binary, Base64, BestEffort. Defaults to BestEffort
+        # BestEffort tries to use an content-type indicator from the upstream API if provided.
+        decodeStrategy: Binary
+
   # Used to fetch all properties from the Provider key
   # If multiple dataFrom are specified, secrets are merged in the specified order
   dataFrom:
